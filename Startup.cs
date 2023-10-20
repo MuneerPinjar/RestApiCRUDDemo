@@ -28,7 +28,7 @@ namespace RestApiCRUDDemo
         {
             //Connection
             var connection = Configuration.GetConnectionString("BootCampDbConn");
-            services.AddDbContextPool<BootCampDemoContext>(options => options.UseSqlServer(connection));
+            services.AddDbContext<BootCampDemoContext>(options => options.UseSqlServer(connection));
 
             services.AddControllers();
         }
