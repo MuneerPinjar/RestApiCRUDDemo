@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RestApiCRUDDemo.Controllers
 {
-    [Authorize]
+   [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductController : ControllerBase

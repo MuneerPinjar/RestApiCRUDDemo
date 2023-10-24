@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using RestApiCRUDDemo.Models;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,37 @@ namespace RestApiCRUDDemo
             var connection = Configuration.GetConnectionString("BootCampDbConn");
             services.AddDbContext<BootCampDemoContext>(options => options.UseSqlServer(connection));
 
+            //Swagger Generator to the services collection in the startup.configureServices method
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+                // Define the security scheme (e.g., JWT Bearer token)
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter your Bearer token in the format 'Bearer {your token}'",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                // Define security requirements (e.g., specify where the security is applied)
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+            });
+
             services.AddControllers();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -57,6 +89,13 @@ namespace RestApiCRUDDemo
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Sample REST API");
+            });
 
             app.UseRouting();
 
